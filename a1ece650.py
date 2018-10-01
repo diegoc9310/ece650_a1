@@ -8,7 +8,7 @@ class Line(object):
         self.dst = dst
 
     def __str__(self):
-        return str(self.src.index) + '-->' + str(self.dst.index)
+        return str(round(self.src.index, 2)) + '-->' + str(round(self.dst.index, 2))
 
 class Point(object):
     def __init__ (self, x, y,name):
@@ -17,7 +17,7 @@ class Point(object):
         self.name = str(name)
         self.index = float((((self.x+self.y)*(self.x+self.y+1))/2)+self.y)
     def __str__ (self):
-        return str(self.index)+':  '+'(' + str(self.x) + ',' + str(self.y) + ')'
+        return str(round(self.index, 2))+':  '+'(' + str(round(self.x,2)) + ',' + str(round(self.y,2))+ ')'
 
 class Distance(object):
     def __init__(self, index, distance):
@@ -144,15 +144,19 @@ def Parser(line):
           if x=="a" or x=="c":
             command=x            
             parser_state=1
-          if x=="r":
+          elif x=="r":
             command=x
             parser_state=11
-          if x=="g":
+          elif x=="g":
             command=x        
             if len_input==len(line)-2:
               parser_state=9
             else:
              parser_state=14 ## This state is shared between graph and remove command
+          else:
+            print 'Error: Command not recognized'
+            break 
+
         else:
           print 'Error: Command not recognized'
           break         
@@ -162,7 +166,10 @@ def Parser(line):
         if line[len_input]==" ":
           parser_state=2
         else:
-          print 'Error: Add a space between command and arguments'
+          if len_input==len(line)-1:
+            print 'Error: Missing required arguments'
+          else:
+            print 'Error: Add a space between command and arguments'
           break
 ###State 2###
       elif parser_state==2:
@@ -202,7 +209,7 @@ def Parser(line):
         if line[len_input]==" ":
           parser_state=5
         else:
-          print'Error: Wrong command format'
+          print'Error: Space nedded between "Name" argument and coordinates (x,y)'
           break
 ###State 5###
       elif parser_state==5:
@@ -373,14 +380,16 @@ def Parser(line):
           if command=='r':
             print'Error: Wrong command format'
           elif command=='g':
-            print'Error: Command recieves no arguments'
+            if line[len_input]!=" ":
+              print 'Error: Wrong command format'
+            else:
+              print'Error: Command recieves no arguments'
           else:
             print 'Error: Wrong command format'
           break
 ########REMOVE COMMAND END########
 #########PARSER STATE MACHINE END#########
     if parser_state==9:
-      print 'Finished reading input'
       for i in xrange(0,len(test_points),1):
         points = re.findall("[-+]?\d+[\.]?\d*[eE]?[-+]?\d*", test_points[i])
         p=Point(points[0],points[1],name)
@@ -527,12 +536,7 @@ def main():
     ### make sure to remove all spurious print statements as required
     ### by the assignment
   point_list=[]
-  test_points=[]
   street_list=[]
-  edge_list=[]
-  edge_list2=[]
-  vertex_list=[]
-  intercept_list=[]
   while True:
     line = sys.stdin.readline()
     input_data=Parser(line)
@@ -550,13 +554,19 @@ def main():
         if len(street_list)>=1:
           name_found=search_street_name(street_list,street_name)
           if name_found=="False":
-            street_list.append(point_list[:])
-            print "Street successfully added"
+            if len(point_list)>1:
+              street_list.append(point_list[:])
+              print "Street successfully added"
+            else:
+              print "Error: Streets need to contain at least two point coordinates"
           else:
             print "Error: this street has all ready been registered to change it use the c command"
         else:
-          street_list.append(point_list[:])
-          print "Street successfully added"
+          if len(point_list)>1:
+            street_list.append(point_list[:])
+            print "Street successfully added"
+          else:
+            print "Error: Streets need to contain at least two point coordinates"
 
 
 ########Change Command Interpretation#####
@@ -566,9 +576,12 @@ def main():
           if name_found=="False":
             print "Error: Street not found"
           else:
-            del street_list[name_found]
-            street_list.append(point_list[:])
-            print "Street successfully changed"
+            if len(point_list)>1:
+              del street_list[name_found]
+              street_list.append(point_list[:])
+              print "Street successfully changed"
+            else:
+              print "Error: Streets need to contain at least two point coordinates"
         else:
           print "Error: currently there are no added Streets"
 
@@ -592,17 +605,11 @@ def main():
           graph_calculator(street_list)
         else:
           print "Error: currently there are no added Streets"
-
-
-
-
-
-
-      #for i in xrange(0,len(street_list),1):
-        #for j in xrange(0,len(street_list[i]),1):
-          #print street_list[i][j]
-      
+   
   
+    for i in xrange(0,len(street_list),1):
+      for j in xrange(0,len(street_list[i]),1):
+        print street_list[i][j]
   sys.exit(0)
 
 if __name__ == '__main__':
