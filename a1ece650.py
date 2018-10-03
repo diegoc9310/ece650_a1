@@ -1,6 +1,6 @@
 import sys
 import re
-
+import hashlib
 # YOUR CODE GOES HERE
 class Line(object):
     def __init__ (self, src, dst):
@@ -8,16 +8,16 @@ class Line(object):
         self.dst = dst
 
     def __str__(self):
-        return   '<' +str(round(self.src.index, 2)) + ',' + str(round(self.dst.index, 2)) + '>' 
+        return   '<' +str(self.src.index) + ',' + str(self.dst.index) + '>' 
 
 class Point(object):
     def __init__ (self, x, y,name):
         self.x = float(x)
         self.y = float(y)
         self.name = str(name)
-        self.index = float((((self.x+self.y)*(self.x+self.y+1))/2)+self.y)
+        self.index = hashlib.sha1('(' + str("{:.3g}".format(self.x,2)) + ',' + str("{:.3g}".format(self.y,2))+ ')'.encode("UTF-8")).hexdigest()[:4]
     def __str__ (self):
-        return str(round(self.index, 2))+':  '+'(' + str(round(self.x,2)) + ',' + str(round(self.y,2))+ ')'
+        return str(self.index)+':  '+'(' + str("{:.3g}".format(self.x,2)) + ',' + str("{:.3g}".format(self.y,2))+ ')'
 
 class Distance(object):
     def __init__(self, index, distance):
