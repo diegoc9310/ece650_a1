@@ -8,7 +8,7 @@ class Line(object):
         self.dst = dst
 
     def __str__(self):
-        return str(round(self.src.index, 2)) + '-->' + str(round(self.dst.index, 2))
+        return   '<' +str(round(self.src.index, 2)) + ',' + str(round(self.dst.index, 2)) + '>' 
 
 class Point(object):
     def __init__ (self, x, y,name):
@@ -143,43 +143,43 @@ def Parser(line):
         elif x.isalpha():
           if x=="a" or x=="c":
             command=x            
-            parser_state=1
+            parser_state = 1 #Go Next
           elif x=="r":
             command=x
-            parser_state=11
+            parser_state = 11 #Go Next
           elif x=="g":
             command=x        
             if len_input==len(line)-2:
-              parser_state=9
+              parser_state = 9 #Go Next
             else:
-             parser_state=14 ## This state is shared between graph and remove command
+             parser_state = 14 #Go Next 
           else:
-            print 'Error: Command not recognized'
+            print 'Error: Command not recognized.'+' error_code[',parser_state,']'
             break 
 
         else:
-          print 'Error: Command not recognized'
+          print 'Error: Command not recognized.'+' error_code[',parser_state,']'
           break         
 ########ADD/CHANGE COMMAND########
 ###State 1###
       elif parser_state==1:
         if line[len_input]==" ":
-          parser_state=2
+          parser_state = 2 #Go Next 
         else:
           if len_input==len(line)-1:
-            print 'Error: Missing required arguments'
+            print 'Error: Missing required arguments.'+' error_code[',parser_state,']'
           else:
-            print 'Error: Add a space between command and arguments'
+            print 'Error: Add a space between command and arguments.'+' error_code[',parser_state,']'
           break
 ###State 2###
       elif parser_state==2:
         if line[len_input]==" ":
           pass
         elif line[len_input]=='"':
-          parser_state=3 ##Go Next
+          parser_state = 3 #Go Next
           name=""
         else:
-          print 'Incorrect street name argument format use: "Street Name"'
+          print 'Error: needed name argument use format: "Street Name".'+' error_code[',parser_state,']'
           break
 ###State 3###
       elif parser_state==3:
@@ -187,38 +187,41 @@ def Parser(line):
         if x.isalpha():
           name+=line[len_input]
         elif x.isdigit():
-          print 'Error: Do not enter numbers or special characters in Street Name'
+          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
           break
         elif line[len_input]!='"' and line[len_input]!=' ':
-          print 'Error: Do not enter numbers or special characters in Street Name'
+          print 'Error: wrong command format.'+' error_code[',parser_state,']'
           break
         elif line[len_input]=='"':
           if len(name)>=1:
-            parser_state=4##Go Next
+            parser_state = 4 #Go Next
           else:
-            print 'Error: Name not found'
+            print 'Error: Name not found.'+' error_code[',parser_state,']'
             break
         elif line[len_input]==" ":
           name+=line[len_input] 
         else:
-          print 'Error: Do not enter numbers or special characters in Street Name'
+          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
           break
 ###State 4###
       elif parser_state==4:
         
         if line[len_input]==" ":
-          parser_state=5
+          parser_state = 5 #Go Next 
         else:
-          print'Error: Space nedded between "Name" argument and coordinates (x,y)'
+          if len_input==len(line)-1:
+            print 'Error: Missing required arguments.'+' error_code[',parser_state,']'
+          else:
+            print'Error: Space nedded between "Name" argument and coordinates (x,y).'+' error_code[',parser_state,']'
           break
 ###State 5###
       elif parser_state==5:
         if line[len_input]==" ":
           pass
         elif line[len_input]=="(":
-          parser_state=6 ##Go Next
+          parser_state=6 #Go Next
         else:
-          print 'Error: coordinates need to be inside (x,y)'
+          print 'Error: needed coordinates (x,y).'+' error_code[',parser_state,']'
           break
 ###State 6###
 
@@ -233,7 +236,7 @@ def Parser(line):
             pointx+=line[len_input]
             sign_flag=1
           else:
-            print 'Error: wrong coordinate format'
+            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
             break
         elif line[len_input].isdigit():
           if space_flag==0:
@@ -241,15 +244,19 @@ def Parser(line):
             number_flag=1
             sign_flag=1
           else:
-            print 'Error: wrong coordinate format'
+            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
             break
         elif line[len_input]==",":
-          parser_state=7
-          sign_flag=0
-          space_flag=0
-          number_flag=0
+          if(number_flag==1):
+            parser_state = 7 #Go Next 
+            sign_flag=0
+            space_flag=0
+            number_flag=0
+          else:
+            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+            break
         else:
-          print 'Error: wrong coordinate format'
+          print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
           break
 ###State 7###
       elif parser_state==7:
@@ -260,12 +267,19 @@ def Parser(line):
             pass
         elif len_input==len(line)-2:
           if line[len_input]==")":
-            test_points.append('('+str(pointx)+','+str(pointy)+')')
-            pointx=""
-            pointy=""
-            parser_state=9
+            if(number_flag==1):
+              test_points.append('('+str(pointx)+','+str(pointy)+')')
+              pointx=""
+              pointy=""
+              sign_flag=0
+              space_flag=0
+              number_flag=0
+              parser_state = 9 #Go Next
+            else:
+              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+              break 
           else:
-            print 'Error: wrong coordinate format'
+            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
             break
         else:
           if line[len_input]=="-":
@@ -273,7 +287,7 @@ def Parser(line):
               pointy+=line[len_input]
               sign_flag=1
             else:
-              print 'Error: wrong coordinate format'
+              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
               break
           elif line[len_input].isdigit():
             if space_flag==0:
@@ -281,58 +295,63 @@ def Parser(line):
               number_flag=1
               sign_flag=1
             else:
-              print 'Error: wrong coordinate format'
+              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
               break
           elif line[len_input]==")":
-            parser_state=8
-            test_points.append('('+str(pointx)+','+str(pointy)+')')
-            pointx=""
-            pointy=""
-            sign_flag=0
-
+            if(number_flag==1):
+              parser_state = 8 #Go Next 
+              test_points.append('('+str(pointx)+','+str(pointy)+')')
+              pointx=""
+              pointy=""
+              sign_flag=0
+              space_flag=0
+              number_flag=0
+            else:
+              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+              break
           else:
-            print 'Error: wrong coordinate format'
+            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
             break
 ###State 8###  
       elif parser_state==8:
         if len_input==len(line)-2:
           if line[len_input]==" ":
-             parser_state=9
+             parser_state = 9 #Go Next 
           else:
-            'Error: Wrong coordinate format'
+            'Error: Wrong coordinate format.'+' error_code[',parser_state,']'
         else:
           if line[len_input]==" ":
             pass
           elif line[len_input]=="(":
             if len_input!=len(line)-1:
-              parser_state=6
+              parser_state = 6 #Go Next 
               sign_flag=0
               space_flag=0
               number_flag=0
           else: 
-            print 'Error: Wrong coordinate format'
+            print 'Error: Wrong coordinate format.'+' error_code[',parser_state,']'
             break
 ######ADD/CHANGE COMMAND END######
 ##########REMOVE COMMAND##########
 ###State 11###
       elif parser_state==11:
         if line[len_input]==" ":
-          parser_state=12
+          parser_state = 12 #Go Next 
         else:
           if len_input==len(line)-1:
-            print 'Error: required "Name" argument'
+            print 'Error: required "Name" argument.'+' error_code[',parser_state,']'
           else:
-            print 'Error: required space separation between command and argument'
+            print 'Error: required space separation between command and argument.'+' error_code[',parser_state,']'
           break
 ###State 12###
       elif parser_state==12:
         if line[len_input]==" ":
           pass
         elif line[len_input]=='"':
-          parser_state=13 ##Go Next
+          parser_state = 13 #Go Next
           name=""
         else:
-          print 'Error: required "Name" argument'
+          print 'Error: required "Name" argument.'+' error_code[',parser_state,']'
           break
 ###State 13###
       elif parser_state==13:
@@ -340,32 +359,32 @@ def Parser(line):
         if x.isalpha():
           name+=line[len_input]
         elif x.isdigit():
-          print 'Error: Do not enter numbers or special characters in Street Name'
+          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
           break
         elif line[len_input]!='"' and line[len_input]!=' ':
-          print 'Error: Do not enter numbers or special characters in Street Name'
+          print 'Error: wrong command format.'+' error_code[',parser_state,']'
           break
         elif line[len_input]=='"':
           if len_input==len(line)-2:
             if len(name)>=1:
-              parser_state=9##Go Next
+              parser_state = 9 #Go Next
             
             else:
-              print 'Error: Name not found'
+              print 'Error: Name not found.'+' error_code[',parser_state,']'
               break
 
           elif len(name)>=1:
-            parser_state=14##Go Next
+            parser_state = 14 #Go Next
           else:
-            print 'Error: Name not found'
+            print 'Error: Name not found.'+' error_code[',parser_state,']'
             break
 
         elif line[len_input]==" ":
           name+=line[len_input] 
         else:
-          print 'Error: Do not enter numbers or special characters in Street Name'
+          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
           break
-###State 14###
+###State 14### This state is shared between graph and remove command
       elif parser_state==14:
         error_flag=0
         for a in range(len_input,len(line)-1,1):
@@ -374,18 +393,18 @@ def Parser(line):
           else:
             error_flag=1
         if error_flag==0:
-          parser_state=9
+          parser_state = 9 #Go Next 
           break
         else:
           if command=='r':
-            print'Error: Wrong command format'
+            print'Error: Wrong command format.'+' error_code[',parser_state,']'
           elif command=='g':
             if line[len_input]!=" ":
-              print 'Error: Wrong command format'
+              print 'Error: Wrong command format.'+' error_code[',parser_state,']'
             else:
-              print'Error: Command recieves no arguments'
+              print'Error: Command recieves no arguments.'+' error_code[',parser_state,']'
           else:
-            print 'Error: Wrong command format'
+            print 'Error: Wrong command format.'+' error_code[',parser_state,']'
           break
 ########REMOVE COMMAND END########
 #########PARSER STATE MACHINE END#########
@@ -396,7 +415,6 @@ def Parser(line):
         point_list.append(p)
       return command,name,point_list
     else:
-      print "error_code[",parser_state,"]"
       return False
 
 ##########################################
@@ -415,6 +433,7 @@ def graph_calculator(street_list):
   edge_list=[]
   sorted_street_list=[]
   vertex_list=[]
+  foud_flag=0
 
   for i in xrange(0,(len(street_list))):
     x= len(street_list[i])-1
@@ -431,29 +450,69 @@ def graph_calculator(street_list):
                 for a in range(0,(len(intercept_list))):
                   if (intercept_list[a].x!=point_test.x) or (intercept_list[a].y!=point_test.y):
                     intercept_list.append(point_test)
-
+                    foud_flag=1
               else:
                 intercept_list.append(point_test)
+                foud_flag=1
             else:
               p1=cross_product(street_list[i][j],street_list[i][j+1],street_list[k][l])
               if p1!= False:
                 intercept_found=True
                 intercept_list.append(street_list[k][l])
+                foud_flag=1
                 point_test=True
               p2=cross_product(street_list[i][j],street_list[i][j+1],street_list[k][l+1])
               if p2!= False:
                 intercept_found=True
                 street_list[k][l+1].name="intersect"
                 intercept_list.append(street_list[k][l+1])
+                foud_flag=1
                 point_test=True
-        if point_test!= False:
-              
+
+      if foud_flag!= 0:
+        ################################################################################# 
+        #Find index of repeated intersects
+        delete_list[:]=[]
+        for d in range(0,(len(intercept_list))):
+          for c in range(1+d,(len(intercept_list))):
+            if (intercept_list[d].x==intercept_list[c].x) and(intercept_list[d].y==intercept_list[c].y):
+              if c not in delete_list:
+                delete_list.append(c)
+        delete_list = sorted(delete_list)
+
+        #Delete repeated intersects 
+        for f in xrange(0,(len(delete_list))):
+          de= delete_list[f]-f
+          del intercept_list[de]  
+
+        if(len(intercept_list)>1):
+          #Order street values by distance from starting point 
+          
+          dist_list[:]=[]
+          for q in range(0,(len(intercept_list))):
+            xdif = intercept_list[q].x-street_list[i][j].x
+            ydif = intercept_list[q].y-street_list[i][j].y
+            new1= ((xdif*xdif)+(ydif*ydif))**(.5)
+            dist_list.append(Distance(q,new1))
+          dist_list.sort(key=Distance.sort_key('distance'))
+        
+          point_intercept_list.append( street_list[i][j]  )
+          for m in range(0,(len(dist_list))):
+            x=dist_list[m].index
+            point_intercept_list.append(intercept_list[x])
+          
+          point_intercept_list.append(  street_list[i][j+1] )
+
+        else:
           point_intercept_list.append( street_list[i][j]  )       
           for z in range(0,(len(intercept_list))):
             point_intercept_list.append(intercept_list[z])
           point_intercept_list.append(  street_list[i][j+1] )
-          intercept_list[:]=[]
-          point_test=0
+
+        intercept_list[:]=[]
+        point_test=0
+        foud_flag=0
+          #################################################################################           
     if intercept_found==True:
       street_intercept_list.append(point_intercept_list[:])
       intercept_found=False
@@ -472,33 +531,18 @@ def graph_calculator(street_list):
       de= delete_list[i]-i
       del street_intercept_list[x][de]
 
-#Order street values by distance from starting point 
-  for t in range(0,(len(street_intercept_list))):
-    sorted_line_list=[]
-    dist_list[:]=[]
-    for a in range(1,(len(street_intercept_list[t]))):
-      xdif = street_intercept_list[t][a].x-street_intercept_list[t][0].x
-      ydif = street_intercept_list[t][a].y-street_intercept_list[t][0].y
-      new1= ((xdif*xdif)+(ydif*ydif))**(.5)
-      dist_list.append(Distance(a,new1))
-    dist_list.sort(key=Distance.sort_key('distance'))
-    sorted_line_list.append(street_intercept_list[t][0])
-    for a in range(0,(len(dist_list))):
-      x=dist_list[a].index
-      sorted_line_list.append(street_intercept_list[t][x])
-    sorted_street_list.append(sorted_line_list[:])
-        
+
 #Generate Edge List from ordered List   
-  for a in range(0,(len(sorted_street_list))):
-    for b in range(0,(len(sorted_street_list[a])-1)):
-      if sorted_street_list[a][b].name==sorted_street_list[a][b+1].name:
-        if sorted_street_list[a][b].name!="intersect":
+  for a in range(0,(len(street_intercept_list))):
+    for b in range(0,(len(street_intercept_list[a])-1)):
+      if street_intercept_list[a][b].name==street_intercept_list[a][b+1].name:
+        if street_intercept_list[a][b].name!="intersect":
           pass ## no intercept not considered edge
         else:
-          edge_list.append(Line(sorted_street_list[a][b], sorted_street_list[a][b+1]))
+          edge_list.append(Line(street_intercept_list[a][b], street_intercept_list[a][b+1]))
       else:
-        edge_list.append(Line(sorted_street_list[a][b], sorted_street_list[a][b+1]))
-      
+        edge_list.append(Line(street_intercept_list[a][b], street_intercept_list[a][b+1]))
+
 #Save all Vertexes from edge list before filtering
   for a in range(0,(len(edge_list))):
     vertex_list.append(edge_list[a].src)
@@ -512,11 +556,12 @@ def graph_calculator(street_list):
         if b not in delete_list:
           delete_list.append(b)
   delete_list = sorted(delete_list)
+
 #Delete repeated Vertexes 
   for i in xrange(0,(len(delete_list))):
     de= delete_list[i]-i
     del vertex_list[de]
-      
+       
 #Print Graph 
   print 'V = {'   
   for i in xrange(0,(len(vertex_list))):
@@ -524,17 +569,14 @@ def graph_calculator(street_list):
   print'}'
   print 'E = {'
   for i in xrange(0,(len(edge_list))):
-    print edge_list[i]  
+    if i==len(edge_list)-1:
+      print edge_list[i]
+    else:
+      print str(edge_list[i])+"," 
   print'}'
 
-
-
 def main():
-    ### YOUR MAIN CODE GOES HERE
 
-    ### sample code to read from stdin.
-    ### make sure to remove all spurious print statements as required
-    ### by the assignment
   point_list=[]
   street_list=[]
   while True:
@@ -556,7 +598,6 @@ def main():
           if name_found=="False":
             if len(point_list)>1:
               street_list.append(point_list[:])
-              print "Street successfully added"
             else:
               print "Error: Streets need to contain at least two point coordinates"
           else:
@@ -564,10 +605,8 @@ def main():
         else:
           if len(point_list)>1:
             street_list.append(point_list[:])
-            print "Street successfully added"
           else:
             print "Error: Streets need to contain at least two point coordinates"
-
 
 ########Change Command Interpretation#####
       elif command=='c':
@@ -579,12 +618,10 @@ def main():
             if len(point_list)>1:
               del street_list[name_found]
               street_list.append(point_list[:])
-              print "Street successfully changed"
             else:
               print "Error: Streets need to contain at least two point coordinates"
         else:
           print "Error: currently there are no added Streets"
-
 
 ########Remove Command Interpretation#####
       elif command=='r':
@@ -594,7 +631,6 @@ def main():
             print "Error: Street not found"
           else:
             del street_list[name_found]
-            print "Street successfully removed"
         else:
           print "Error: currently there are no added Streets"
         pass
@@ -606,10 +642,6 @@ def main():
         else:
           print "Error: currently there are no added Streets"
    
-  
-    for i in xrange(0,len(street_list),1):
-      for j in xrange(0,len(street_list[i]),1):
-        print street_list[i][j]
   sys.exit(0)
 
 if __name__ == '__main__':
