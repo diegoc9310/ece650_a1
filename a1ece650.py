@@ -15,10 +15,20 @@ class Point(object):
         self.x = float(x)
         self.y = float(y)
         self.name = str(name)
-        self.index = hashlib.sha1('(' + str("{:.3g}".format(self.x,2)) + ',' + str("{:.3g}".format(self.y,2))+ ')'.encode("UTF-8")).hexdigest()[:4]
+        self.index = hashlib.sha1('(' + str(pp(self.x)) + ',' + str(pp(self.y))+ ')'.encode("UTF-8")).hexdigest()[:4]
     def __str__ (self):
-        return str(self.index)+':  '+'(' + str("{:.3g}".format(self.x,2)) + ',' + str("{:.3g}".format(self.y,2))+ ')'
-
+        return str(self.index)+':  '+'(' + str(pp(self.x)) + ',' + str(pp(self.y))+ ')'
+def pp(x):
+    """Returns a pretty-print string representation of a number.
+       A float number is represented by an integer, if it is whole,
+       and up to two decimal places if it isn't
+    """
+    if isinstance(x, float):
+        if x.is_integer():
+            return str(int(x))
+        else:
+            return "{0:.2f}".format(x)
+    return str(x)
 class Distance(object):
     def __init__(self, index, distance):
         self.index = index
