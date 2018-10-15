@@ -164,11 +164,11 @@ def Parser(line):
             else:
              parser_state = 14 #Go Next 
           else:
-            print 'Error: Command not recognized.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Command not recognized.\n" )
             break 
 
         else:
-          print 'Error: Command not recognized.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: Command not recognized.\n" )
           break         
 ########ADD/CHANGE COMMAND########
 ###State 1###
@@ -177,9 +177,9 @@ def Parser(line):
           parser_state = 2 #Go Next 
         else:
           if len_input==len(line)-1:
-            print 'Error: Missing required arguments.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Missing required arguments.\n" )
           else:
-            print 'Error: Add a space between command and arguments.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Add a space between command and arguments.\n" )
           break
 ###State 2###
       elif parser_state==2:
@@ -189,7 +189,7 @@ def Parser(line):
           parser_state = 3 #Go Next
           name=""
         else:
-          print 'Error: needed name argument use format: "Street Name".'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: needed name argument use format: 'Street Name'.\n" )
           break
 ###State 3###
       elif parser_state==3:
@@ -197,21 +197,21 @@ def Parser(line):
         if x.isalpha():
           name+=line[len_input]
         elif x.isdigit():
-          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: Do not enter numbers or special characters in Street Name.\n" )
           break
         elif line[len_input]!='"' and line[len_input]!=' ':
-          print 'Error: wrong command format.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: wrong command format.\n" )
           break
         elif line[len_input]=='"':
           if len(name)>=1:
             parser_state = 4 #Go Next
           else:
-            print 'Error: Name not found.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Name not found.\n" )
             break
         elif line[len_input]==" ":
           name+=line[len_input] 
         else:
-          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: Do not enter numbers or special characters in Street Name.\n" )
           break
 ###State 4###
       elif parser_state==4:
@@ -220,9 +220,9 @@ def Parser(line):
           parser_state = 5 #Go Next 
         else:
           if len_input==len(line)-1:
-            print 'Error: Missing required arguments.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Missing required arguments.\n" )
           else:
-            print'Error: Space nedded between "Name" argument and coordinates (x,y).'+' error_code[',parser_state,']'
+            sys.stderr.write("Error: Space nedded between 'Name'argument and coordinates (x,y).\n" )
           break
 ###State 5###
       elif parser_state==5:
@@ -231,7 +231,7 @@ def Parser(line):
         elif line[len_input]=="(":
           parser_state=6 #Go Next
         else:
-          print 'Error: needed coordinates (x,y).'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: needed coordinates (x,y).\n" )
           break
 ###State 6###
 
@@ -246,7 +246,7 @@ def Parser(line):
             pointx+=line[len_input]
             sign_flag=1
           else:
-            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: wrong coordinate format.\n" )
             break
         elif line[len_input].isdigit():
           if space_flag==0:
@@ -254,7 +254,7 @@ def Parser(line):
             number_flag=1
             sign_flag=1
           else:
-            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: wrong coordinate format.\n" )
             break
         elif line[len_input]==",":
           if(number_flag==1):
@@ -263,10 +263,10 @@ def Parser(line):
             space_flag=0
             number_flag=0
           else:
-            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: wrong coordinate format.\n" )
             break
         else:
-          print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: wrong coordinate format.\n" )
           break
 ###State 7###
       elif parser_state==7:
@@ -286,10 +286,10 @@ def Parser(line):
               number_flag=0
               parser_state = 9 #Go Next
             else:
-              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+              sys.stderr.write( "Error: wrong coordinate format.\n" )
               break 
           else:
-            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: wrong coordinate format.\n" )
             break
         else:
           if line[len_input]=="-":
@@ -297,7 +297,7 @@ def Parser(line):
               pointy+=line[len_input]
               sign_flag=1
             else:
-              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+              sys.stderr.write( "Error: wrong coordinate format.\n" )
               break
           elif line[len_input].isdigit():
             if space_flag==0:
@@ -305,7 +305,7 @@ def Parser(line):
               number_flag=1
               sign_flag=1
             else:
-              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+              sys.stderr.write( "Error: wrong coordinate format.\n'" )
               break
           elif line[len_input]==")":
             if(number_flag==1):
@@ -317,10 +317,10 @@ def Parser(line):
               space_flag=0
               number_flag=0
             else:
-              print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+              sys.stderr.write( "Error: wrong coordinate format.\n" )
               break
           else:
-            print 'Error: wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: wrong coordinate format.\n" )
             break
 ###State 8###  
       elif parser_state==8:
@@ -328,7 +328,7 @@ def Parser(line):
           if line[len_input]==" ":
              parser_state = 9 #Go Next 
           else:
-            'Error: Wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write("Error: Wrong coordinate format.\n" )
         else:
           if line[len_input]==" ":
             pass
@@ -339,7 +339,7 @@ def Parser(line):
               space_flag=0
               number_flag=0
           else: 
-            print 'Error: Wrong coordinate format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Wrong coordinate format.\n" )
             break
 ######ADD/CHANGE COMMAND END######
 ##########REMOVE COMMAND##########
@@ -349,9 +349,9 @@ def Parser(line):
           parser_state = 12 #Go Next 
         else:
           if len_input==len(line)-1:
-            print 'Error: required "Name" argument.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: required 'Name' argument.\n" )
           else:
-            print 'Error: required space separation between command and argument.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: required space separation between command and argument.\n" )
           break
 ###State 12###
       elif parser_state==12:
@@ -361,7 +361,7 @@ def Parser(line):
           parser_state = 13 #Go Next
           name=""
         else:
-          print 'Error: required "Name" argument.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: required 'Name'argument.\n" )
           break
 ###State 13###
       elif parser_state==13:
@@ -369,10 +369,10 @@ def Parser(line):
         if x.isalpha():
           name+=line[len_input]
         elif x.isdigit():
-          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: Do not enter numbers or special characters in Street Name.\n" )
           break
         elif line[len_input]!='"' and line[len_input]!=' ':
-          print 'Error: wrong command format.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: wrong command format.\n" )
           break
         elif line[len_input]=='"':
           if len_input==len(line)-2:
@@ -380,19 +380,19 @@ def Parser(line):
               parser_state = 9 #Go Next
             
             else:
-              print 'Error: Name not found.'+' error_code[',parser_state,']'
+              sys.stderr.write( "Error: Name not found.\n" )
               break
 
           elif len(name)>=1:
             parser_state = 14 #Go Next
           else:
-            print 'Error: Name not found.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Name not found.\n" )
             break
 
         elif line[len_input]==" ":
           name+=line[len_input] 
         else:
-          print 'Error: Do not enter numbers or special characters in Street Name.'+' error_code[',parser_state,']'
+          sys.stderr.write( "Error: Do not enter numbers or special characters in Street Name.\n" )
           break
 ###State 14### This state is shared between graph and remove command
       elif parser_state==14:
@@ -407,14 +407,14 @@ def Parser(line):
           break
         else:
           if command=='r':
-            print'Error: Wrong command format.'+' error_code[',parser_state,']'
+            sys.stderr.write("Error: Wrong command format.\n" )
           elif command=='g':
             if line[len_input]!=" ":
-              print 'Error: Wrong command format.'+' error_code[',parser_state,']'
+              sys.stderr.write( "Error: Wrong command format.\n" )
             else:
-              print'Error: Command recieves no arguments.'+' error_code[',parser_state,']'
+              sys.stderr.write("Error: Command recieves no arguments.\n" )
           else:
-            print 'Error: Wrong command format.'+' error_code[',parser_state,']'
+            sys.stderr.write( "Error: Wrong command format.\n" )
           break
 ########REMOVE COMMAND END########
 #########PARSER STATE MACHINE END#########
@@ -573,17 +573,17 @@ def graph_calculator(street_list):
     del vertex_list[de]
        
 #Print Graph 
-  print 'V = {'   
+  sys.stdout.write( "V = {\n" )
   for i in xrange(0,(len(vertex_list))):
-    print vertex_list[i]      
-  print'}'
-  print 'E = {'
+    sys.stdout.write(str(vertex_list[i])+"\n")
+  sys.stdout.write("}\n")
+  sys.stdout.write( "E = {\n")
   for i in xrange(0,(len(edge_list))):
     if i==len(edge_list)-1:
-      print edge_list[i]
+      sys.stdout.write(str(edge_list[i])+"\n")
     else:
-      print str(edge_list[i])+"," 
-  print'}'
+      sys.stdout.write( str(edge_list[i])+",\n")
+  sys.stdout.write("}\n")
 
 def main():
 
@@ -609,40 +609,40 @@ def main():
             if len(point_list)>1:
               street_list.append(point_list[:])
             else:
-              print "Error: Streets need to contain at least two point coordinates"
+              sys.stderr.write( "Error: Streets need to contain at least two point coordinates\n")
           else:
-            print "Error: this street has all ready been registered to change it use the c command"
+            sys.stderr.write( "Error: this street has all ready been registered to change it use the c command\n")
         else:
           if len(point_list)>1:
             street_list.append(point_list[:])
           else:
-            print "Error: Streets need to contain at least two point coordinates"
+            sys.stderr.write( "Error: Streets need to contain at least two point coordinates\n")
 
 ########Change Command Interpretation#####
       elif command=='c':
         if len(street_list)>=1:
           name_found=search_street_name(street_list,street_name)
           if name_found=="False":
-            print "Error: Street not found"
+            sys.stderr.write( "Error: Street not found\n")
           else:
             if len(point_list)>1:
               del street_list[name_found]
               street_list.append(point_list[:])
             else:
-              print "Error: Streets need to contain at least two point coordinates"
+              sys.stderr.write( "Error: Streets need to contain at least two point coordinates\n")
         else:
-          print "Error: currently there are no added Streets"
+          sys.stderr.write( "Error: currently there are no added Streets\n")
 
 ########Remove Command Interpretation#####
       elif command=='r':
         if len(street_list)>=1:
           name_found=search_street_name(street_list,street_name)
           if name_found=="False":
-            print "Error: Street not found"
+            sys.stderr.write( "Error: Street not found\n")
           else:
             del street_list[name_found]
         else:
-          print "Error: currently there are no added Streets"
+          sys.stderr.write( "Error: currently there are no added Streets\n")
         pass
 
 ########Graph Command Interpretation######
@@ -650,7 +650,7 @@ def main():
         if len(street_list)>=1:
           graph_calculator(street_list)
         else:
-          print "Error: currently there are no added Streets"
+          sys.stderr.write( "Error: currently there are no added Streets\n")
    
   sys.exit(0)
 
